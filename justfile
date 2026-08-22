@@ -19,3 +19,9 @@ build:
 
 test:
     npm test
+
+plan env="dev":
+    cd infra/live/{{env}} && terragrunt stack run plan
+
+apply env="dev":
+    cd infra/live/{{env}} && terragrunt stack run apply

@@ -1,21 +1,12 @@
 # ---------------------------------------------------------------------------
-# GENERATED FILE — managed by flake-hub (golden-base).
+# GENERATED FILE — managed by flake-hub (golden-infra).
 # Do not edit manually: `nix run .#generate` overwrites it.
 # To change it, edit repo.nix, or the template in the pack that owns it.
 # ---------------------------------------------------------------------------
 
-result
-result-*
-.direnv/
-.DS_Store
-bin/
-target/
-node_modules/
-dist/
-.terragrunt-cache/
-.terragrunt-stack/
-.terragrunt-stack-manifest
-terragrunt.values.hcl
-**/_.*.gen.tf
-**/.terraform.lock.hcl
-infra/live/*/*/
+locals {
+  default_tags = {
+    email       = "forrestmillerj@gmail.com"
+    managedWith = "terraform"
+  }
+}
