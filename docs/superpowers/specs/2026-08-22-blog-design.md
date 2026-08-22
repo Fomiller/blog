@@ -234,10 +234,25 @@ write on `Fomiller/blog` only. An App rather than a machine user: its tokens are
 short-lived, and the permission is scoped to the repository rather than to a
 person's account.
 
-Its private key and installation id go to AWS Secrets Manager and reach the Kargo
-*project* namespace — not the `kargo` control-plane namespace — as a Secret
-labelled `kargo.akuity.io/cred-type: git`, carrying `githubAppID`,
-`githubAppPrivateKey`, `githubAppInstallationID`, and `repoURL`.
+Its private key lives in Doppler, project `kargo`, config `dev`, as
+`KARGO_BOT_PRIVATE_KEY` — the same project the Kargo control plane already reads
+`ADMIN_ACCOUNT_PASSWORD_HASH` from. The installation id belongs beside it.
+
+They reach the Kargo *project* namespace — not the `kargo` control-plane
+namespace — as a Secret labelled `kargo.akuity.io/cred-type: git`, carrying
+`githubAppID`, `githubAppPrivateKey`, `githubAppInstallationID`, and `repoURL`.
+
+Those two namespaces being different is the wrinkle. `k8s/apps/kargo/external-secrets.yaml`
+defines the `doppler-kargo` `SecretStore` in namespace `kargo`, and a
+`SecretStore` is namespaced, so nothing in the project namespace can read it. It
+becomes a `ClusterSecretStore`. The bot key is a Kargo-wide credential, not a
+control-plane one, so cluster scope matches what it already is — and every future
+project namespace then needs one object rather than three.
+
+Note this is Doppler, while the Directus secrets go through AWS Secrets Manager
+directly. Both patterns are live in the cluster: Doppler for things a human
+rotates, Secrets Manager for things terraform owns. The Kargo bot key is the
+former.
 
 Creating the App and generating its key are manual steps outside this repo.
 
