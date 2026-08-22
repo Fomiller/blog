@@ -229,10 +229,17 @@ The Kargo install spec (`docs/superpowers/specs/2026-08-15-kargo-install-design.
 listed git write credentials as an explicit non-goal, on the grounds that nothing
 promoted yet. Something promotes now.
 
-A dedicated bot account with write access to `Fomiller/blog` only. Its credentials
-go to AWS Secrets Manager and reach the Kargo project namespace as a Secret
-labelled for Kargo to adopt as repository credentials. Creating the bot is a
-manual step outside this repo.
+A GitHub App, `fomiller-kargo-bot` (app id `4686096`), with Contents read and
+write on `Fomiller/blog` only. An App rather than a machine user: its tokens are
+short-lived, and the permission is scoped to the repository rather than to a
+person's account.
+
+Its private key and installation id go to AWS Secrets Manager and reach the Kargo
+*project* namespace — not the `kargo` control-plane namespace — as a Secret
+labelled `kargo.akuity.io/cred-type: git`, carrying `githubAppID`,
+`githubAppPrivateKey`, `githubAppInstallationID`, and `repoURL`.
+
+Creating the App and generating its key are manual steps outside this repo.
 
 ## flake-hub changes
 
