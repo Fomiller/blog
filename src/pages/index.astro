@@ -2,6 +2,9 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { listPosts, type Post } from '../lib/directus';
 import { formatDate } from '../lib/format';
+import { allTags, postsWithTag, tagsOf } from '../lib/tags';
+
+export const prerender = false;
 
 // A CMS outage should cost the reader the list, not the whole site.
 let posts: Post[] = [];
@@ -11,10 +14,19 @@ try {
 } catch {
   reachable = false;
 }
+
+const requested = Astro.url.searchParams.get('tag');
+const tags = allTags(posts);
+// An unknown tag in the URL is treated as no filter rather than as an empty
+// garden, so a stale link still shows something.
+const active = requested && tags.includes(requested) ? requested : null;
+const shown = postsWithTag(posts, active);
+
+const title = active ? `the garden · ${active}` : 'the garden';
 ---
 
 <BaseLayout
-  title="the garden"
+  title={title}
   description="A digital garden: travel, homeownership, cars, technology, programming, cooking."
 >
   <h1>A place to put things down.</h1>
@@ -25,26 +37,81 @@ try {
   </p>
 
   {
-    posts.length > 0 && (
+    tags.length > 0 && (
+      <nav class="tags" aria-label="Filter by tag">
+        <a href="/" class:list={['tag', { on: !active }]}>everything</a>
+        {tags.map((tag) => (
+          <a
+            href={`/?tag=${encodeURIComponent(tag)}`}
+            class:list={['tag', { on: tag === active }]}
+            aria-current={tag === active ? 'true' : undefined}
+          >
+            {tag}
+          </a>
+        ))}
+      </nav>
+    )
+  }
+
+  {
+    shown.length > 0 && (
       <ul class="entries">
-        {posts.map((post) => (
+        {shown.map((post) => (
           <li>
-            <a href={`/garden/${post.slug}`}>{post.title}</a>
+            <a class="entry" href={`/garden/${post.slug}`}>
+              {post.title}
+            </a>
             {post.excerpt && <p>{post.excerpt}</p>}
-            {formatDate(post.published_at) && <time>{formatDate(post.published_at)}</time>}
+            <p class="meta">
+              {formatDate(post.published_at) && <time>{formatDate(post.published_at)}</time>}
+              {tagsOf(post).length > 0 && <span>{tagsOf(post).join(' · ')}</span>}
+            </p>
           </li>
         ))}
       </ul>
     )
   }
 
-  {posts.length === 0 && reachable && <p class="quiet">Nothing has come up yet. The beds are dug.</p>}
+  {
+    shown.length === 0 && reachable && active && (
+      <p class="quiet">Nothing tagged “{active}” yet. <a href="/">Show everything</a>.</p>
+    )
+  }
+  {
+    shown.length === 0 && reachable && !active && (
+      <p class="quiet">Nothing has come up yet. The beds are dug.</p>
+    )
+  }
   {!reachable && <p class="quiet">The garden is closed for a moment. Come back shortly.</p>}
 </BaseLayout>
 
 <style>
   .lede {
+    margin-bottom: 2.5rem;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
     margin-bottom: 3.5rem;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+  }
+
+  .tag {
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+
+  .tag:hover {
+    color: var(--accent);
+  }
+
+  .tag.on {
+    color: var(--ink);
+    border-bottom-color: var(--accent);
   }
 
   .entries {
@@ -56,23 +123,37 @@ try {
     gap: 2.5rem;
   }
 
-  .entries a {
-    font-size: 1.25rem;
-    text-decoration: none;
-    color: var(--ink);
-    border-bottom: 1px solid var(--line);
+  /* A column, and items sized to their own content. Without it the title and
+     the date sit on one line whenever an entry has no excerpt between them,
+     and the title's rule runs into the date. */
+  .entries li {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
   }
 
-  .entries a:hover {
-    border-bottom-color: var(--accent);
+  .entry {
+    font-size: 1.25rem;
+    line-height: 1.3;
+    text-decoration: none;
+    color: var(--ink);
+    border-bottom: 1px solid transparent;
+  }
+
+  .entry:hover {
     color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 
   .entries p {
-    margin: 0.5rem 0 0.25rem;
+    margin: 0;
   }
 
-  time {
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
     font-size: 0.8125rem;
     color: var(--ink-soft);
   }
