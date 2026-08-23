@@ -3,8 +3,13 @@
 # prod overrides, layered on ../values.app.base.yaml. Only keys that differ from
 # the base belong here.
 
+# Written by Kargo on every promotion. tag@digest, not a bare tag: the digest
+# makes a deploy reproducible, the tag keeps `kubectl describe` readable.
+#
+# This used to be a Helm parameter homelab passed in, which beat whatever this
+# file said. Nothing overrides it now, so it has to carry the real value.
 image:
-  tag: latest
+  tag: e0ccac9@sha256:525c490f0ae1f6da7cc9e5cda6c934f1d0501f8fdefb9d490e4a6d6b53499781
 
 # The Cloudflare tunnel forwards this hostname to Traefik because homelab lists
 # it in public_hostnames. This is the half that tells Traefik which Service
