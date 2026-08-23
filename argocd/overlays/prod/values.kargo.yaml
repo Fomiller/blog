@@ -5,75 +5,10 @@
 
 project:
   name: blog
-  # This chart declares the namespace, so Argo CD's managedNamespaceMetadata
-  # never applies to it. The image pull Secret is minted into namespaces
-  # carrying this label, and without it the pods cannot pull.
-  namespaceLabels:
-    fomiller.dev/ecr-pull: "true"
   # Promotions commit back into this repo. The chart version and the image tag
   # both live in argocd/overlays/, so a promotion touches only files a reader
   # of this repo can find.
   repoURL: https://github.com/Fomiller/blog.git
-
-# Kargo reads these out of this namespace and finds them by their cred-type
-# label. All three are references; nothing sensitive is in this file.
-#
-# repoURL is compared for equality unless repoURLIsRegex is set, so a prefix
-# with the flag off matches nothing and the request goes out unauthenticated —
-# which reads as "no tags found", not as an auth error.
-credentials:
-  # Promotions are commits. This is the identity that makes them: the
-  # fomiller-kargo-bot GitHub App, installed on the Fomiller account. An App
-  # rather than a PAT because the credential is scoped to an installation
-  # rather than a person, and Kargo mints a short-lived token per promotion.
-  git:
-    enabled: true
-    type: git
-    secretStore:
-      name: doppler-kargo-clustersecretstore
-    repoURL: '^https://github\.com/Fomiller/.*$'
-    repoURLIsRegex: true
-    data:
-      githubAppID: "{{ .KARGO_BOT_APP_ID }}"
-      githubAppInstallationID: "{{ .KARGO_BOT_INSTALLATION_ID }}"
-      githubAppPrivateKey: "{{ .KARGO_BOT_PRIVATE_KEY }}"
-    remoteKeys:
-      KARGO_BOT_APP_ID: KARGO_BOT_APP_ID
-      KARGO_BOT_INSTALLATION_ID: KARGO_BOT_INSTALLATION_ID
-      KARGO_BOT_PRIVATE_KEY: KARGO_BOT_PRIVATE_KEY
-  # Kargo lists ECR tags itself; the kubelet's pull secret is not visible to
-  # it. Matched against the subscription's full repoURL, which includes the
-  # image name, so the bare registry host would not be equal to it.
-  ecr-image:
-    enabled: true
-    type: image
-    secretStore:
-      name: ecr-token-clustersecretstore
-    repoURL: '^695434033664\.dkr\.ecr\.us-east-1\.amazonaws\.com/.*$'
-    repoURLIsRegex: true
-    data:
-      username: "{{ .username }}"
-      password: "{{ .password }}"
-    dataFrom:
-      - extract:
-          key: ecr-token
-  # Same registry and same token, still a separate credential: Kargo looks up
-  # helm and image credentials independently, so one labelled `image` leaves
-  # chart discovery unauthenticated. The chart subscription keeps its oci://
-  # scheme, so the pattern does too.
-  ecr-chart:
-    enabled: true
-    type: helm
-    secretStore:
-      name: ecr-token-clustersecretstore
-    repoURL: '^oci://695434033664\.dkr\.ecr\.us-east-1\.amazonaws\.com/.*$'
-    repoURLIsRegex: true
-    data:
-      username: "{{ .username }}"
-      password: "{{ .password }}"
-    dataFrom:
-      - extract:
-          key: ecr-token
 
 services:
   - name: blog
