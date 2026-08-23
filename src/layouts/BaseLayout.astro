@@ -5,6 +5,10 @@ interface Props {
 }
 
 const { title, description } = Astro.props;
+
+// A page with nothing for the sidebar keeps the plain centred column, rather
+// than a two-column grid with an empty gutter in it.
+const split = Astro.slots.has('aside');
 ---
 
 <!doctype html>
@@ -17,13 +21,22 @@ const { title, description } = Astro.props;
     <link rel="icon" href="data:," />
   </head>
   <body>
-    <div class="frame">
+    <div class:list={['frame', { wide: split }]}>
       <header>
         <a class="mark" href="/">the garden</a>
       </header>
-      <main>
-        <slot />
-      </main>
+      <div class:list={['body', { split }]}>
+        {
+          split && (
+            <aside>
+              <slot name="aside" />
+            </aside>
+          )
+        }
+        <main>
+          <slot />
+        </main>
+      </div>
       <footer>
         <p>Tended slowly. Nothing here is finished.</p>
       </footer>
@@ -39,6 +52,8 @@ const { title, description } = Astro.props;
     --line: #e3ddd3;
     --accent: #6d7f6b;
     --measure: 34rem;
+    --aside: 9rem;
+    --gutter: 3rem;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -75,6 +90,42 @@ const { title, description } = Astro.props;
     min-height: 100vh;
   }
 
+  /* Wide enough for the sidebar and the gutter on top of the reading measure,
+     so the prose keeps the same width it has on a page without one. */
+  .frame.wide {
+    max-width: calc(var(--measure) + var(--aside) + var(--gutter));
+  }
+
+  .body {
+    flex: 1;
+  }
+
+  .body.split {
+    display: grid;
+    grid-template-columns: var(--aside) minmax(0, 1fr);
+    gap: var(--gutter);
+    align-items: start;
+  }
+
+  .body.split aside {
+    position: sticky;
+    top: 5rem;
+  }
+
+  /* Below the split width the sidebar stacks above the entries rather than
+     squeezing them. Sticky goes with it: a filter pinned to the top of a phone
+     screen is just lost height. */
+  @media (max-width: 46rem) {
+    .body.split {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .body.split aside {
+      position: static;
+    }
+  }
+
   .mark {
     color: var(--ink-soft);
     text-decoration: none;
@@ -85,10 +136,6 @@ const { title, description } = Astro.props;
 
   .mark:hover {
     color: var(--accent);
-  }
-
-  main {
-    flex: 1;
   }
 
   h1 {
