@@ -371,17 +371,17 @@
       },
       "locked": {
         "dir": "golden-argocd",
-        "lastModified": 1787439585,
-        "narHash": "sha256-R7XWpLh/wmb1UcSBySsTa9RvoYAZqv5tfKMt4Af5iaM=",
+        "lastModified": 1787458842,
+        "narHash": "sha256-tY/czn2HsONjEKaApg3CSA8t8X9+SIp5kDdMFsFfpuU=",
         "owner": "Fomiller",
         "repo": "flake-hub",
-        "rev": "ff1b1fd5b3d9aaf32b2f46bb334ec09661f5f318",
+        "rev": "4fd805245ed68496502cf820f26bc7e7c63b2dea",
         "type": "github"
       },
       "original": {
         "dir": "golden-argocd",
         "owner": "Fomiller",
-        "ref": "refs/tags/golden-argocd-0.7.0",
+        "ref": "refs/tags/golden-argocd-0.8.0",
         "repo": "flake-hub",
         "type": "github"
       }
