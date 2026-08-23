@@ -2,6 +2,7 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { getPost } from '../../lib/directus';
 import { formatDate } from '../../lib/format';
+import { tagsOf } from '../../lib/tags';
 
 export const prerender = false;
 
@@ -30,7 +31,13 @@ const updated = formatDate(post.date_updated);
       {published && <time>{published}</time>}
       {/* A garden entry gets tended. Saying so is the point of the metaphor. */}
       {updated && updated !== published && <span>tended {updated}</span>}
-      {post.tags && post.tags.length > 0 && <span>{post.tags.join(' · ')}</span>}
+      {
+        tagsOf(post).map((tag) => (
+          <a class="tag" href={`/?tag=${encodeURIComponent(tag)}`}>
+            {tag}
+          </a>
+        ))
+      }
     </p>
 
     {post.cover && <img src={`/assets/${post.cover}?width=1200`} alt="" />}
@@ -52,6 +59,17 @@ const updated = formatDate(post.date_updated);
     margin: -0.75rem 0 2.5rem;
     font-size: 0.8125rem;
     color: var(--ink-soft);
+  }
+
+  .meta .tag {
+    color: var(--ink-soft);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+  }
+
+  .meta .tag:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 
   img {
