@@ -1,0 +1,63 @@
+# The blog's promotion pipeline, rendered by kargo-project-chart.
+#
+# Installed by homelab's kargo-projects ApplicationSet, which reads this file
+# out of this repo — see k8s/kargo/blog/config.yaml there.
+#
+# What this does: watch ECR for a new blog image and a new blog-chart, then
+# commit both versions into homelab so Argo CD deploys them.
+
+project:
+  name: blog-delivery
+  # Promotions commit HERE, not into this repo. The Application that runs the
+  # blog takes its chart version and image tag from homelab's per-service file,
+  # so that file is the only thing a promotion needs to touch. Argo CD cannot
+  # read a chart version out of a second repo, which is what put it there.
+  repoURL: https://github.com/Fomiller/homelab.git
+
+services:
+  - name: blog
+    image:
+      repoURL: 695434033664.dkr.ecr.us-east-1.amazonaws.com/blog
+
+charts:
+  - name: blog-chart
+    chart:
+      repoURL: oci://695434033664.dkr.ecr.us-east-1.amazonaws.com/blog-chart
+
+warehouses:
+  - name: blog
+    interval: 5m0s
+    services: [blog]
+    charts: [blog-chart]
+    # publish-image.yml pushes two tags: the short git sha and a moving
+    # `latest`. Only the sha identifies a build, so pinning `latest@sha256:...`
+    # would be an immutable reference to an unreadable name.
+    allowTagsRegex: '^[0-9a-f]{7,40}$'
+    # One warehouse subscribing to both, so a promotion carries a matched pair
+    # rather than letting the image and the chart drift a release apart.
+    updatePaths:
+      - path: k8s/services/blog-prod/config.yaml
+        rootRelative: true
+        updates:
+          - { key: imageTag, source: blog }
+          - { key: chartVersion, source: blog-chart }
+
+stages:
+  - name: prod
+    color: green
+    # One stage, auto-promoted. Kargo does little in this shape and a bad build
+    # reaches the live site with no gate. Adding a dev stage later is an overlay
+    # plus an entry here, not a redesign.
+    autoPromotion: true
+    warehouses: [blog]
+    env: prod
+    git:
+      repoURL: https://github.com/Fomiller/homelab.git
+      branch: main
+    # The chart renders image as `repository:<tag>`, so the value written has to
+    # be `<tag>@<digest>` rather than a bare digest. The digest is what makes a
+    # deploy reproducible; the tag is what makes `kubectl describe` readable.
+    digestPinnedImages: true
+    # No argocd block: the services ApplicationSet already syncs blog-prod
+    # automatically, so naming it here would only add a second thing to keep in
+    # step with the Application's name.
