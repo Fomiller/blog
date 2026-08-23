@@ -10,7 +10,7 @@ kind: Kustomization
 helmCharts:
   - name: blog-chart
     repo: oci://695434033664.dkr.ecr.us-east-1.amazonaws.com
-    version: 0.3.0
+    version: 0.4.0
     releaseName: blog
     # Shared defaults first, this environment's overrides second. On a key both
     # files set, the later one wins.
@@ -21,7 +21,7 @@ helmCharts:
   # is one Application rather than two.
   - name: kargo-project-chart
     repo: oci://695434033664.dkr.ecr.us-east-1.amazonaws.com
-    version: 0.3.0
+    version: 0.4.0
     releaseName: blog
     # The workload's namespace. Kargo requires a project's name and namespace
     # to match, so the project is named after the service and lands beside it.
