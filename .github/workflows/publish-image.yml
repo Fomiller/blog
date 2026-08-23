@@ -21,7 +21,7 @@ jobs:
       contents: read
     with:
       repository: blog
-      role-to-assume: 
+      role-to-assume: arn:aws:iam::695434033664:role/github-actions-ecr
       aws-region: us-east-1
       platforms: linux/amd64
       # A pull request builds the image and throws it away. Only main pushes.

@@ -22,7 +22,7 @@ jobs:
       id-token: write
       contents: read
     with:
-      role-to-assume: 
+      role-to-assume: arn:aws:iam::695434033664:role/github-actions-ecr
       aws-region: us-east-1
       push: ${{ github.event_name == 'push' }}
     secrets: inherit

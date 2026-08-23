@@ -7,6 +7,7 @@
 import? 'just/base.just'
 
 project := "blog"
+infraDir := "infra/live/dev"
 
 fetch:
     curl -sSfL https://raw.githubusercontent.com/Fomiller/justfiles/refs/heads/main/base.just > just/base.just
@@ -19,3 +20,11 @@ build:
 
 test:
     npm test
+
+plan-all:
+    doppler run --name-transformer tf-var -- \
+    terragrunt stack run --tf-path terraform --working-dir {{infraDir}} plan
+
+apply-all:
+    doppler run --name-transformer tf-var -- \
+    terragrunt stack run --tf-path terraform --working-dir {{infraDir}} apply
