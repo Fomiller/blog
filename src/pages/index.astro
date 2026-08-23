@@ -107,15 +107,18 @@ const title = selected.length > 0 ? `the garden · ${selected.join(' + ')}` : 't
     gap: 0.35rem;
   }
 
+  /* The label above the list sits at the same weight as the tags, so without a
+     rule under each one nothing says which of them can be clicked. */
   .tag {
     color: var(--ink-soft);
     text-decoration: none;
     font-size: 0.875rem;
-    border-bottom: 1px solid transparent;
+    border-bottom: 1px solid color-mix(in srgb, var(--ink-soft) 45%, transparent);
   }
 
   .tag:hover {
     color: var(--accent);
+    border-bottom-color: var(--accent);
   }
 
   .tag.on {
