@@ -1,0 +1,115 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <link rel="icon" href="data:," />
+  </head>
+  <body>
+    <div class="frame">
+      <header>
+        <a class="mark" href="/">the garden</a>
+      </header>
+      <main>
+        <slot />
+      </main>
+      <footer>
+        <p>Tended slowly. Nothing here is finished.</p>
+      </footer>
+    </div>
+  </body>
+</html>
+
+<style is:global>
+  :root {
+    --ink: #2f2b26;
+    --ink-soft: #6b635a;
+    --ground: #faf7f2;
+    --line: #e3ddd3;
+    --accent: #6d7f6b;
+    --measure: 34rem;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --ink: #e6e1d8;
+      --ink-soft: #9a9187;
+      --ground: #1a1917;
+      --line: #302d29;
+      --accent: #8fa88c;
+    }
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: ui-serif, Georgia, 'Times New Roman', serif;
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .frame {
+    max-width: var(--measure);
+    margin: 0 auto;
+    padding: 5rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4rem;
+    min-height: 100vh;
+  }
+
+  .mark {
+    color: var(--ink-soft);
+    text-decoration: none;
+    font-size: 0.875rem;
+    letter-spacing: 0.16em;
+    text-transform: lowercase;
+  }
+
+  .mark:hover {
+    color: var(--accent);
+  }
+
+  main {
+    flex: 1;
+  }
+
+  h1 {
+    font-weight: 400;
+    font-size: 1.75rem;
+    line-height: 1.35;
+    margin: 0 0 1.5rem;
+  }
+
+  a {
+    color: var(--accent);
+  }
+
+  footer {
+    border-top: 1px solid var(--line);
+    padding-top: 1.5rem;
+  }
+
+  footer p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 0.875rem;
+  }
+</style>
