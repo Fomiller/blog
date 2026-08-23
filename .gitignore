@@ -12,6 +12,7 @@ bin/
 target/
 node_modules/
 dist/
+.astro/
 .terragrunt-cache/
 .terragrunt-stack/
 .terragrunt-stack-manifest
