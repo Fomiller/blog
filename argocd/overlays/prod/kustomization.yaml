@@ -1,0 +1,33 @@
+# Written once, then it is yours. `nix run .#generate` never touches it again.
+#
+# Kargo rewrites the chart versions below on every promotion, which is the
+# second reason this file is not regenerated: a generate would put the
+# bootstrap versions back and roll the environment backwards.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+helmCharts:
+  - name: blog-chart
+    repo: oci://695434033664.dkr.ecr.us-east-1.amazonaws.com
+    version: 0.3.0
+    releaseName: blog
+    # Shared defaults first, this environment's overrides second. On a key both
+    # files set, the later one wins.
+    valuesFile: ../values.app.base.yaml
+    additionalValuesFiles:
+      - values.app.yaml
+  # The promotion pipeline ships beside the workload it promotes, so a service
+  # is one Application rather than two.
+  #
+  # `charts` belongs to the repo URL, not the chart name. kustomize turns the
+  # name into a local directory, and a slash in it makes that path wrong.
+  - name: kargo-project-chart
+    repo: oci://695434033664.dkr.ecr.us-east-1.amazonaws.com/charts
+    version: 0.2.0
+    releaseName: blog-delivery
+    # Its own namespace, not the workload's. The chart names the namespace
+    # after the Kargo project, and blog already belongs to the running
+    # service.
+    namespace: blog-delivery
+    valuesFile: values.kargo.yaml

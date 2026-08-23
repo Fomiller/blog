@@ -38,8 +38,8 @@
 
   argocd = {
     # One stage, auto-promoted. Kargo does little in this shape and a bad
-    # build reaches the live site with no gate; adding dev later is an overlay
-    # plus a stage entry, not a redesign.
-    environments = [ "prod" ];
+    # build reaches the live site with no gate; adding dev later needs a second
+    # cluster, which is what would make the two environments differ at all.
+    environment = "prod";
   };
 }
