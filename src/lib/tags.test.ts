@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { Post } from './directus';
-import { allTags, postsWithTag, tagsOf } from './tags';
+import { allTags, postsWithTags, selectedTags, tagsOf, toggleQuery } from './tags';
 
 function post(tags: Post['tags'], slug = 'x'): Post {
   return {
@@ -39,18 +39,67 @@ describe('allTags', () => {
   });
 });
 
-describe('postsWithTag', () => {
-  const posts = [post(['cars'], 'a'), post(['cooking'], 'b'), post(null, 'c')];
+describe('selectedTags', () => {
+  const known = ['cars', 'spain', 'travel'];
 
-  it('returns everything when no tag is asked for', () => {
-    expect(postsWithTag(posts, null)).toHaveLength(3);
+  it('reads repeated params and sorts them', () => {
+    const params = new URLSearchParams('tag=travel&tag=spain');
+    expect(selectedTags(params, known)).toEqual(['spain', 'travel']);
   });
 
-  it('keeps only entries carrying the tag', () => {
-    expect(postsWithTag(posts, 'cars').map((p) => p.slug)).toEqual(['a']);
+  it('drops a tag nobody uses, so a stale link still shows something', () => {
+    const params = new URLSearchParams('tag=travel&tag=atlantis');
+    expect(selectedTags(params, known)).toEqual(['travel']);
   });
 
-  it('matches exactly, so one tag is not a prefix of another', () => {
-    expect(postsWithTag(posts, 'car')).toEqual([]);
+  it('collapses a repeat', () => {
+    const params = new URLSearchParams('tag=cars&tag=cars');
+    expect(selectedTags(params, known)).toEqual(['cars']);
+  });
+
+  it('is empty with no params', () => {
+    expect(selectedTags(new URLSearchParams(), known)).toEqual([]);
+  });
+});
+
+describe('postsWithTags', () => {
+  const spain = post(['travel', 'spain'], 'spain');
+  const japan = post(['travel', 'japan'], 'japan');
+  const stew = post(['cooking'], 'stew');
+  const posts = [spain, japan, stew];
+
+  it('returns everything when nothing is selected', () => {
+    expect(postsWithTags(posts, [])).toHaveLength(3);
+  });
+
+  it('narrows on one tag', () => {
+    expect(postsWithTags(posts, ['travel']).map((p) => p.slug)).toEqual(['spain', 'japan']);
+  });
+
+  // The whole point of multi-select: each tag added narrows rather than widens.
+  it('requires every selected tag, not any of them', () => {
+    expect(postsWithTags(posts, ['travel', 'spain']).map((p) => p.slug)).toEqual(['spain']);
+  });
+
+  it('returns nothing when no entry carries the whole set', () => {
+    expect(postsWithTags(posts, ['cooking', 'spain'])).toEqual([]);
+  });
+});
+
+describe('toggleQuery', () => {
+  it('adds a tag to the selection', () => {
+    expect(toggleQuery(['travel'], 'spain')).toBe('/?tag=spain&tag=travel');
+  });
+
+  it('removes one that is already on', () => {
+    expect(toggleQuery(['spain', 'travel'], 'spain')).toBe('/?tag=travel');
+  });
+
+  it('goes home when the last tag comes off', () => {
+    expect(toggleQuery(['travel'], 'travel')).toBe('/');
+  });
+
+  it('escapes what a tag can legally contain', () => {
+    expect(toggleQuery([], 'home & garden')).toBe('/?tag=home+%26+garden');
   });
 });

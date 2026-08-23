@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { listPosts, type Post } from '../lib/directus';
 import { formatDate } from '../lib/format';
-import { allTags, postsWithTag, tagsOf } from '../lib/tags';
+import { allTags, postsWithTags, selectedTags, tagsOf, toggleQuery } from '../lib/tags';
 
 export const prerender = false;
 
@@ -15,43 +15,44 @@ try {
   reachable = false;
 }
 
-const requested = Astro.url.searchParams.get('tag');
 const tags = allTags(posts);
-// An unknown tag in the URL is treated as no filter rather than as an empty
-// garden, so a stale link still shows something.
-const active = requested && tags.includes(requested) ? requested : null;
-const shown = postsWithTag(posts, active);
+const selected = selectedTags(Astro.url.searchParams, tags);
+const shown = postsWithTags(posts, selected);
 
-const title = active ? `the garden · ${active}` : 'the garden';
+const title = selected.length > 0 ? `the garden · ${selected.join(' + ')}` : 'the garden';
 ---
 
 <BaseLayout
   title={title}
   description="A digital garden: travel, homeownership, cars, technology, programming, cooking."
 >
+  {
+    tags.length > 0 && (
+      <nav slot="aside" aria-label="Filter by tag">
+        <p class="label">tags</p>
+        <ul>
+          {tags.map((tag) => (
+            <li>
+              <a
+                href={toggleQuery(selected, tag)}
+                class:list={['tag', { on: selected.includes(tag) }]}
+                aria-pressed={selected.includes(tag) ? 'true' : 'false'}
+              >
+                {tag}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </nav>
+    )
+  }
+
   <h1>A place to put things down.</h1>
 
   <p class="lede">
     Travel, homeownership, cars, technology, programming, cooking. Whatever is
     growing at the time.
   </p>
-
-  {
-    tags.length > 0 && (
-      <nav class="tags" aria-label="Filter by tag">
-        <a href="/" class:list={['tag', { on: !active }]}>everything</a>
-        {tags.map((tag) => (
-          <a
-            href={`/?tag=${encodeURIComponent(tag)}`}
-            class:list={['tag', { on: tag === active }]}
-            aria-current={tag === active ? 'true' : undefined}
-          >
-            {tag}
-          </a>
-        ))}
-      </nav>
-    )
-  }
 
   {
     shown.length > 0 && (
@@ -73,12 +74,15 @@ const title = active ? `the garden · ${active}` : 'the garden';
   }
 
   {
-    shown.length === 0 && reachable && active && (
-      <p class="quiet">Nothing tagged “{active}” yet. <a href="/">Show everything</a>.</p>
+    shown.length === 0 && reachable && selected.length > 0 && (
+      <p class="quiet">
+        Nothing is tagged {selected.join(' and ')} at once. <a href="/">Start again</a>, or drop a
+        tag from the list.
+      </p>
     )
   }
   {
-    shown.length === 0 && reachable && !active && (
+    shown.length === 0 && reachable && selected.length === 0 && (
       <p class="quiet">Nothing has come up yet. The beds are dug.</p>
     )
   }
@@ -86,22 +90,27 @@ const title = active ? `the garden · ${active}` : 'the garden';
 </BaseLayout>
 
 <style>
-  .lede {
-    margin-bottom: 2.5rem;
+  .label {
+    margin: 0 0 0.75rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.16em;
+    text-transform: lowercase;
+    color: var(--ink-soft);
   }
 
-  .tags {
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem 1rem;
-    margin-bottom: 3.5rem;
-    font-size: 0.8125rem;
-    letter-spacing: 0.04em;
+    flex-direction: column;
+    gap: 0.35rem;
   }
 
   .tag {
     color: var(--ink-soft);
     text-decoration: none;
+    font-size: 0.875rem;
     border-bottom: 1px solid transparent;
   }
 
@@ -112,6 +121,20 @@ const title = active ? `the garden · ${active}` : 'the garden';
   .tag.on {
     color: var(--ink);
     border-bottom-color: var(--accent);
+  }
+
+  /* Stacked, the column of tags becomes a wrapping row: a phone should not
+     scroll past a tall list to reach the entries. */
+  @media (max-width: 46rem) {
+    nav ul {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 0.5rem 1rem;
+    }
+  }
+
+  .lede {
+    margin-bottom: 3.5rem;
   }
 
   .entries {
