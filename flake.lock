@@ -371,17 +371,17 @@
       },
       "locked": {
         "dir": "golden-argocd",
-        "lastModified": 1787489208,
-        "narHash": "sha256-lY8u1vvSYxH3joG+SqaO2E7a2Oc9JwPTfzfg9uK9ZsY=",
+        "lastModified": 1787493325,
+        "narHash": "sha256-s4iZAP/H2Tbsx7diYfwL5CpAzFKnHadTfSu7vWlit00=",
         "owner": "Fomiller",
         "repo": "flake-hub",
-        "rev": "2434df54cb6bcdd8e1e61fc182b2437b9850147a",
+        "rev": "222ecf55e80575efe41a361873025873054785bc",
         "type": "github"
       },
       "original": {
         "dir": "golden-argocd",
         "owner": "Fomiller",
-        "ref": "refs/tags/golden-argocd-0.10.0",
+        "ref": "refs/tags/golden-argocd-0.11.1",
         "repo": "flake-hub",
         "type": "github"
       }
@@ -594,17 +594,17 @@
     "golden-engine_10": {
       "locked": {
         "dir": "golden-engine",
-        "lastModified": 1786973303,
-        "narHash": "sha256-itcIweUdwACOvRzsWioPikraz+lEsdzWG+abfX4MAhY=",
+        "lastModified": 1787493325,
+        "narHash": "sha256-s4iZAP/H2Tbsx7diYfwL5CpAzFKnHadTfSu7vWlit00=",
         "owner": "Fomiller",
         "repo": "flake-hub",
-        "rev": "5896346a005e4719e41f63b3d593cfb5417ca384",
+        "rev": "222ecf55e80575efe41a361873025873054785bc",
         "type": "github"
       },
       "original": {
         "dir": "golden-engine",
         "owner": "Fomiller",
-        "ref": "refs/tags/golden-engine-0.4.0",
+        "ref": "refs/tags/golden-engine-0.5.0",
         "repo": "flake-hub",
         "type": "github"
       }

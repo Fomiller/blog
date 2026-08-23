@@ -54,10 +54,9 @@ stages:
     git:
       repoURL: https://github.com/Fomiller/homelab.git
       branch: main
-    # The chart renders image as `repository:<tag>`, so the value written has to
-    # be `<tag>@<digest>` rather than a bare digest. The digest is what makes a
-    # deploy reproducible; the tag is what makes `kubectl describe` readable.
-    digestPinnedImages: true
+    # digestPinnedImages is not set: `<tag>@<digest>` is the default since
+    # kargo-project-chart 0.2.0, which is what the chart's `repository:<tag>`
+    # rendering needs anyway.
     # No argocd block: the services ApplicationSet already syncs blog-prod
     # automatically, so naming it here would only add a second thing to keep in
     # step with the Application's name.
