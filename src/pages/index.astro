@@ -1,5 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import { listPosts, type Post } from '../lib/directus';
+import { formatDate } from '../lib/format';
+
+// A CMS outage should cost the reader the list, not the whole site.
+let posts: Post[] = [];
+let reachable = true;
+try {
+  posts = await listPosts();
+} catch {
+  reachable = false;
+}
 ---
 
 <BaseLayout
@@ -8,13 +19,65 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 >
   <h1>A place to put things down.</h1>
 
-  <p>
+  <p class="lede">
     Travel, homeownership, cars, technology, programming, cooking. Whatever is
     growing at the time.
   </p>
 
-  <p>
-    Posts arrive once the beds are dug. For now the soil is turned and the
-    server is awake.
-  </p>
+  {
+    posts.length > 0 && (
+      <ul class="entries">
+        {posts.map((post) => (
+          <li>
+            <a href={`/garden/${post.slug}`}>{post.title}</a>
+            {post.excerpt && <p>{post.excerpt}</p>}
+            {formatDate(post.published_at) && <time>{formatDate(post.published_at)}</time>}
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
+  {posts.length === 0 && reachable && <p class="quiet">Nothing has come up yet. The beds are dug.</p>}
+  {!reachable && <p class="quiet">The garden is closed for a moment. Come back shortly.</p>}
 </BaseLayout>
+
+<style>
+  .lede {
+    margin-bottom: 3.5rem;
+  }
+
+  .entries {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .entries a {
+    font-size: 1.25rem;
+    text-decoration: none;
+    color: var(--ink);
+    border-bottom: 1px solid var(--line);
+  }
+
+  .entries a:hover {
+    border-bottom-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .entries p {
+    margin: 0.5rem 0 0.25rem;
+  }
+
+  time {
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+
+  .quiet {
+    color: var(--ink-soft);
+  }
+</style>
