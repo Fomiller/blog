@@ -39,6 +39,9 @@
     # build reaches the live site with no gate; adding dev later is an overlay
     # plus a stage entry, not a redesign.
     environments = [ "prod" ];
+    # Bumped for the route the chart now carries. homelab's config.json names
+    # the version it actually runs, so this only decides what gets published.
+    chartVersion = "0.2.0";
     registry = "695434033664.dkr.ecr.us-east-1.amazonaws.com";
     replicas = 1;
   };

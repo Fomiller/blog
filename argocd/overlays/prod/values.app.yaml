@@ -5,3 +5,9 @@
 
 image:
   tag: latest
+
+# The Cloudflare tunnel forwards this hostname to Traefik because homelab lists
+# it in public_hostnames. This is the half that tells Traefik which Service
+# answers for it.
+ingressRoute:
+  host: blog.fomiller.com
