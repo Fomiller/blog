@@ -41,7 +41,7 @@
     environments = [ "prod" ];
     # Bumped for the route the chart now carries. homelab's config.json names
     # the version it actually runs, so this only decides what gets published.
-    chartVersion = "0.2.0";
+    chartVersion = "0.3.0";
     registry = "695434033664.dkr.ecr.us-east-1.amazonaws.com";
     replicas = 1;
   };

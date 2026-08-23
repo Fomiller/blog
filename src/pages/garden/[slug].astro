@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { getPost } from '../../lib/directus';
+import { formatDate } from '../../lib/format';
+
+export const prerender = false;
+
+const { slug } = Astro.params;
+
+let post;
+try {
+  post = slug ? await getPost(slug) : null;
+} catch {
+  return new Response('The garden is closed for a moment.', { status: 503 });
+}
+
+if (!post) {
+  return new Response('Not found', { status: 404 });
+}
+
+const published = formatDate(post.published_at);
+const updated = formatDate(post.date_updated);
+---
+
+<BaseLayout title={post.title} description={post.excerpt ?? undefined}>
+  <article>
+    <h1>{post.title}</h1>
+
+    <p class="meta">
+      {published && <time>{published}</time>}
+      {/* A garden entry gets tended. Saying so is the point of the metaphor. */}
+      {updated && updated !== published && <span>tended {updated}</span>}
+      {post.tags && post.tags.length > 0 && <span>{post.tags.join(' · ')}</span>}
+    </p>
+
+    {post.cover && <img src={`/assets/${post.cover}?width=1200`} alt="" />}
+
+    {/* Raw HTML from the CMS. Only an authenticated Directus editor can write
+        it, and that is one person, so this is trusted input rather than user
+        content. */}
+    {post.content && <div class="body" set:html={post.content} />}
+  </article>
+
+  <p class="back"><a href="/">← back to the garden</a></p>
+</BaseLayout>
+
+<style>
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: -0.75rem 0 2.5rem;
+    font-size: 0.8125rem;
+    color: var(--ink-soft);
+  }
+
+  img {
+    max-width: 100%;
+    height: auto;
+    margin-bottom: 2rem;
+  }
+
+  .body :global(h2),
+  .body :global(h3) {
+    font-weight: 400;
+    margin-top: 2.5rem;
+  }
+
+  .body :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .body :global(pre) {
+    overflow-x: auto;
+    padding: 1rem;
+    background: color-mix(in srgb, var(--ink) 6%, transparent);
+    border-radius: 2px;
+    font-size: 0.875rem;
+  }
+
+  .body :global(blockquote) {
+    margin: 2rem 0;
+    padding-left: 1.25rem;
+    border-left: 2px solid var(--line);
+    color: var(--ink-soft);
+  }
+
+  .back {
+    margin-top: 4rem;
+    font-size: 0.875rem;
+  }
+
+  .back a {
+    text-decoration: none;
+  }
+</style>

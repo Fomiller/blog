@@ -11,3 +11,11 @@ image:
 # answers for it.
 ingressRoute:
   host: blog.fomiller.com
+
+# DIRECTUS_URL has a working default in astro.config.mjs, so it is not repeated
+# here. Only the credential needs saying, and it is referenced rather than
+# inlined — the Secret is created by homelab's blog-secrets app from Secrets
+# Manager, and carries DIRECTUS_TOKEN.
+envFrom:
+  - secretRef:
+      name: blog-application-secret
