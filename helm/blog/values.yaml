@@ -26,3 +26,16 @@ env: []
 # Secrets. A Secret is referenced, never inlined, so nothing sensitive appears
 # in a rendered chart or an Argo CD diff.
 envFrom: []
+
+# Secrets this chart creates from the cluster's secret store. The map key names
+# the Secret, so a key here is what envFrom above refers to.
+#
+# Empty by default: rendering the chart should not need a ClusterSecretStore to
+# exist. The overlay that deploys turns them on.
+#
+#   externalSecrets:
+#     blog-application-secret:
+#       secretStore:
+#         name: aws-clustersecretstore
+#       remoteKey: dev/fomiller/homelab/blog-application-secret
+externalSecrets: {}

@@ -19,8 +19,16 @@ ingressRoute:
 
 # DIRECTUS_URL has a working default in astro.config.mjs, so it is not repeated
 # here. Only the credential needs saying, and it is referenced rather than
-# inlined — the Secret is created by homelab's blog-secrets app from Secrets
-# Manager, and carries DIRECTUS_TOKEN.
+# inlined.
 envFrom:
   - secretRef:
       name: blog-application-secret
+
+# The Secret above, minted from Secrets Manager into this namespace. The entry
+# there is Terraform's — see homelab's
+# infra/units/aws/global/secrets/blog.tf — and carries DIRECTUS_TOKEN.
+externalSecrets:
+  blog-application-secret:
+    secretStore:
+      name: aws-clustersecretstore
+    remoteKey: dev/fomiller/homelab/blog-application-secret
