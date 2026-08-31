@@ -27,10 +27,9 @@ warehouses:
     # rather than letting the image and the chart drift a release apart.
     services: [blog]
     charts: [blog-chart]
-    # publish-image.yml pushes the short git sha and a moving `latest`. Only
-    # the sha identifies a build, so `latest@sha256:...` would be an immutable
-    # reference under an unreadable name.
-    allowTagsRegex: '^[0-9a-f]{7,40}$'
+    # Stable versions only. A release candidate never reaches this environment,
+    # because the warehouse it would arrive through does not accept the tag.
+    allowTagsRegex: '^[0-9]+\.[0-9]+\.[0-9]+$'
     updatePaths:
       - path: argocd/overlays/prod/values.app.yaml
         rootRelative: true

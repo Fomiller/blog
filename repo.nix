@@ -6,9 +6,6 @@
 
   github = {
     codeowners = [ "@Fomiller" ];
-    # The generic publish role from aws-org. Every repo that pushes an image or
-    # a chart points here; nothing per-repo is created for it.
-    roleToAssume = "arn:aws:iam::695434033664:role/github-actions-ecr";
     publishImage = true;
     publishChart = true;
   };
