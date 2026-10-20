@@ -911,17 +911,17 @@
       },
       "locked": {
         "dir": "golden-github",
-        "lastModified": 1788128071,
-        "narHash": "sha256-bpPeECnfdyt3IDARZ/xwQHpwjBgFVus7LXaU9PSgyQQ=",
+        "lastModified": 1792519311,
+        "narHash": "sha256-wbQ/XyPwj761OE6/ZFHWB+0KN+UVufpupJTQtDwljF0=",
         "owner": "Fomiller",
         "repo": "flake-hub",
-        "rev": "be6bc8181e1051f278fa8e20cbb613f4202fb281",
+        "rev": "fb574d3a44d05a3cd7f5993e53d291552e822ef5",
         "type": "github"
       },
       "original": {
         "dir": "golden-github",
         "owner": "Fomiller",
-        "ref": "refs/tags/golden-github-0.9.0",
+        "ref": "refs/tags/golden-github-0.11.0",
         "repo": "flake-hub",
         "type": "github"
       }
