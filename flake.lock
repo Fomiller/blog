@@ -489,17 +489,17 @@
       },
       "locked": {
         "dir": "golden-base",
-        "lastModified": 1787442011,
-        "narHash": "sha256-i98X150jI3G/R43vmAOFUdNDOZeFWePO9JP+IqApSMo=",
+        "lastModified": 1792511959,
+        "narHash": "sha256-VOJzaU7pQ8s9gUHHKo0qnRkHAStmMTNi8t8IXPN1RTE=",
         "owner": "Fomiller",
         "repo": "flake-hub",
-        "rev": "cf70ef9556b72d8072349313e5e0d7ccc31772c8",
+        "rev": "dcbad83558481f76bf6f69cab56e3872b85c8842",
         "type": "github"
       },
       "original": {
         "dir": "golden-base",
         "owner": "Fomiller",
-        "ref": "refs/tags/golden-base-0.6.0",
+        "ref": "refs/tags/golden-base-0.7.0",
         "repo": "flake-hub",
         "type": "github"
       }
