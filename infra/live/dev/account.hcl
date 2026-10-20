@@ -8,6 +8,4 @@ locals {
   environment = "dev"
   region      = "us-east-1"
   account_id  = "695434033664"
-  # Overrides the name root.hcl would derive. variables.hcl still wins.
-  state_bucket = "fomiller-terraform-state-dev"
 }

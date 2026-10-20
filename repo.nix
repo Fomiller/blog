@@ -28,7 +28,6 @@
       dev = {
         enabled = true;
         account = "695434033664";
-        stateBucket = "fomiller-terraform-state-dev";
       };
     };
   };
