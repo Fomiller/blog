@@ -974,17 +974,17 @@
       },
       "locked": {
         "dir": "golden-infra",
-        "lastModified": 1788141490,
-        "narHash": "sha256-Lu6pE9rj16Kw7R3h4BROS1+8/IW9f+VRwShapX/i38o=",
+        "lastModified": 1792512921,
+        "narHash": "sha256-vqYvxeU+Gkx/qQAxIDNJuCGizGCvCMYKC0n/SXTE2jI=",
         "owner": "Fomiller",
         "repo": "flake-hub",
-        "rev": "8a8b1d68a005fa4d3c43ea9965aec5ba987a25bf",
+        "rev": "912d5f03f1b420dba297ff90b2e27328c9350d87",
         "type": "github"
       },
       "original": {
         "dir": "golden-infra",
         "owner": "Fomiller",
-        "ref": "refs/tags/golden-infra-0.6.0",
+        "ref": "refs/tags/golden-infra-0.7.0",
         "repo": "flake-hub",
         "type": "github"
       }
